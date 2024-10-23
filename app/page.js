@@ -23,7 +23,8 @@ export default function Home() {
           </li>
           <li>Save and see your changes instantly.</li>
           <Link href='/training/new'>Add Training</Link><br/>
-          <Link href='/training'>Training</Link>
+          <Link href='/training'>Training</Link><br/>
+          <Link href='login'>Login</Link>
 
         </ol>
 

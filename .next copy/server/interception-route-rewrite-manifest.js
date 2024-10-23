@@ -1,1 +1,0 @@
-self.__INTERCEPTION_ROUTE_REWRITE_MANIFEST="[{\"source\":\"/feed/:slug/image\",\"destination\":\"/feed/__NEXT_EMPTY_PARAM__/(.)image\",\"has\":[{\"type\":\"header\",\"key\":\"Next-Url\",\"value\":\"\\\\/feed(?:\\\\/([^\\\\/#\\\\?]+?))(?:\\\\/(.*))?[\\\\/#\\\\?]?\"}]}]"

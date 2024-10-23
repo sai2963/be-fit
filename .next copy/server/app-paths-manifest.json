@@ -1,6 +1,0 @@
-{
-  "/page": "app/page.js",
-  "/feed/page": "app/feed/page.js",
-  "/feed/[slug]/page": "app/feed/[slug]/page.js",
-  "/feed/[slug]/@model/(.)image/page": "app/feed/[slug]/@model/(.)image/page.js"
-}
