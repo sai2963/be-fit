@@ -1,47 +1,62 @@
+'use server';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "@/firebase/clientApp";
 
-export async function Auth(formData) {
-  const name = formData.get("name");
-  const email = formData.get("email");
-  const password = formData.get("password");
-
-  try {
+export async function handleAuth(formData) {
+    const email = formData.get("email")?.toString();
+    const password = formData.get("password")?.toString();
+    const name = formData.get("name")?.toString();
+    
     if (!email || !password) {
-      throw new Error("Email and password are required");
+        return {
+            success: false,
+            error: "Email and password are required"
+        };
     }
 
-    const isLogin = formData.get("isLogin") === 'true'; // Ensure boolean
-    let user;
-
-    if (isLogin) { // Sign in
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      user = userCredential.user;
-      console.log("User signed in:", user);
-      return { success: true, user };
-    } else { // Sign up
-      try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        user = userCredential.user;
-        await updateProfile(user, { displayName: name });
-        console.log("User signed up:", user);
-        return { success: true, user };
-      } catch (signUpError) {
-        switch (signUpError.code) {
-          case "auth/email-already-in-use":
-            return { success: false, error: "This email is already in use. Please sign in instead." };
-          case "auth/weak-password":
-            return { success: false, error: "Password is too weak. Please choose a stronger password." };
-          case "auth/network-request-failed":
-            return { success: false, error: "Network error. Please check your internet connection and try again." };
-          default:
-            console.error("Signup error:", signUpError);
-            return { success: false, error: "An error occurred during signup. Please try again." };
+    try {
+        if (name) {
+            // Sign up flow
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            await updateProfile(userCredential.user, { displayName: name });
+            
+            return {
+                success: true,
+                user: {
+                    email: userCredential.user.email,
+                    displayName: name,
+                    uid: userCredential.user.uid
+                }
+            };
+        } else {
+            // Sign in flow
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            
+            return {
+                success: true,
+                user: {
+                    email: userCredential.user.email,
+                    displayName: userCredential.user.displayName,
+                    uid: userCredential.user.uid
+                }
+            };
         }
-      }
+    } catch (error) {
+        console.error("Auth error:", error.code, error.message);
+        
+        const errorMessages = {
+            'auth/email-already-in-use': "This email is already registered",
+            'auth/invalid-email': "Invalid email address",
+            'auth/operation-not-allowed': "Email/password accounts are not enabled",
+            'auth/weak-password': "Password should be at least 6 characters",
+            'auth/user-disabled': "This account has been disabled",
+            'auth/user-not-found': "Invalid email or password",
+            'auth/wrong-password': "Invalid email or password"
+        };
+
+        return {
+            success: false,
+            error: errorMessages[error.code] || "An error occurred during authentication"
+        };
     }
-  } catch (error) {
-    console.error("Authentication error:", error);
-    return { success: false, error: "An error occurred during authentication. Please try again." };
-  }
 }
