@@ -4,14 +4,16 @@ import Link from 'next/link';
 import { onAuthStateChanged, signOut, getAuth } from 'firebase/auth';
 import { auth } from '@/firebase/clientApp';
 import { useRouter } from 'next/navigation';
-if (getAuth) {
+if (getAuth()) {
     console.log('authenticated');
 
 }
 else {
-    console.log('not authenticates');
+    console.log('not authenticated');
 
 }
+console.log(getAuth());
+
 export default function Header() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [currentUser, setCurrentUser] = useState(null);
@@ -98,7 +100,7 @@ export default function Header() {
                                     <div className="absolute inset-0 h-full w-full bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-lg blur opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
                                 </Link>
                                 <Link
-                                    href="/add-training"
+                                    href="/training/new"
                                     className="relative px-3 py-2 text-sm text-gray-300 hover:text-white transition-colors duration-200 group"
                                 >
                                     <span className="relative z-10">Add Training</span>
