@@ -1,62 +1,78 @@
-'use server';
+'use client';
+
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "@/firebase/clientApp";
 
-export async function handleAuth(formData) {
-    const email = formData.get("email")?.toString();
-    const password = formData.get("password")?.toString();
-    const name = formData.get("name")?.toString();
-    
-    if (!email || !password) {
-        return {
-            success: false,
-            error: "Email and password are required"
-        };
-    }
-
+export async function authenticateUser(email, password, name = null) {
     try {
+        if (!email || !password) {
+            return {
+                success: false,
+                error: "Email and password are required"
+            };
+        }
+
+        // Sign Up Flow
         if (name) {
-            // Sign up flow
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            await updateProfile(userCredential.user, { displayName: name });
-            
+            const user = userCredential.user;
+
+            await updateProfile(user, { displayName: name });
+            console.log("User signed up:", user);
+
             return {
                 success: true,
                 user: {
-                    email: userCredential.user.email,
-                    displayName: name,
-                    uid: userCredential.user.uid
+                    uid: user.uid,
+                    email: user.email,
+                    displayName: user.displayName
                 }
             };
-        } else {
-            // Sign in flow
+        } 
+        // Sign In Flow
+        else {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
-            
+            const user = userCredential.user;
+            console.log("User signed in:", user);
+
             return {
                 success: true,
                 user: {
-                    email: userCredential.user.email,
-                    displayName: userCredential.user.displayName,
-                    uid: userCredential.user.uid
+                    uid: user.uid,
+                    email: user.email,
+                    displayName: user.displayName
                 }
             };
         }
     } catch (error) {
-        console.error("Auth error:", error.code, error.message);
-        
-        const errorMessages = {
-            'auth/email-already-in-use': "This email is already registered",
-            'auth/invalid-email': "Invalid email address",
-            'auth/operation-not-allowed': "Email/password accounts are not enabled",
-            'auth/weak-password': "Password should be at least 6 characters",
-            'auth/user-disabled': "This account has been disabled",
-            'auth/user-not-found': "Invalid email or password",
-            'auth/wrong-password': "Invalid email or password"
-        };
+        console.error("Authentication error:", error);
+        let errorMessage = "An unexpected error occurred";
+
+        switch (error.code) {
+            case 'auth/email-already-in-use':
+                errorMessage = "This email is already registered";
+                break;
+            case 'auth/invalid-email':
+                errorMessage = "Invalid email address";
+                break;
+            case 'auth/operation-not-allowed':
+                errorMessage = "Email/password accounts are not enabled";
+                break;
+            case 'auth/weak-password':
+                errorMessage = "Password should be at least 6 characters";
+                break;
+            case 'auth/user-disabled':
+                errorMessage = "This account has been disabled";
+                break;
+            case 'auth/user-not-found':
+            case 'auth/wrong-password':
+                errorMessage = "Invalid email or password";
+                break;
+        }
 
         return {
             success: false,
-            error: errorMessages[error.code] || "An error occurred during authentication"
+            error: errorMessage
         };
     }
 }

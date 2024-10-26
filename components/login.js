@@ -1,7 +1,8 @@
 'use client';
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { handleAuth } from "./auth";
+import { authenticateUser } from "./auth";
 
 export default function LoginForm() {
     const [isLogin, setIsLogin] = useState(true);
@@ -16,7 +17,11 @@ export default function LoginForm() {
 
         try {
             const formData = new FormData(e.target);
-            const response = await handleAuth(formData);
+            const email = formData.get("email");
+            const password = formData.get("password");
+            const name = formData.get("name");
+
+            const response = await authenticateUser(email, password, !isLogin ? name : null);
 
             if (response.success) {
                 router.push('/training');
