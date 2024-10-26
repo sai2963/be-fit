@@ -1,5 +1,7 @@
+// SliderComponent.js - Client Component
 'use client';
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 const SliderComponent = ({ slides }) => {
     const [currentSlide, setCurrentSlide] = useState(0);
@@ -14,17 +16,16 @@ const SliderComponent = ({ slides }) => {
     return (
         <div className="relative h-screen overflow-hidden">
             {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-b from-gray-950/70 via-gray-950/50 to-gray-950 z-10"></div>
+            <div className="absolute inset-0 bg-gradient-to-b from-gray-950/70 via-gray-950/50 to-gray-950 z-10 pointer-events-none"></div>
             
             {/* Image Slider */}
-            <div className="relative h-full transition-all duration-700 ease-in-out">
+            <div className="relative h-full w-full">
                 {slides.map((slide, index) => (
                     <div
                         key={index}
-                        className={`absolute inset-0 w-full h-full transition-opacity duration-700 ${
-                            currentSlide === index ? 'opacity-100' : 'opacity-0'
+                        className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                            currentSlide === index ? 'opacity-100 z-10' : 'opacity-0 z-0'
                         }`}
-                        style={{ position: 'relative', width: '100%', height: '100vh' }}
                     >
                         <img
                             src={slide.image}
@@ -37,6 +38,8 @@ const SliderComponent = ({ slides }) => {
                                 top: 0,
                                 left: 0
                             }}
+                            className=""
+                            
                         />
                     </div>
                 ))}
