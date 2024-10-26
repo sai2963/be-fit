@@ -101,7 +101,7 @@ export default function LoginForm() {
                         className="w-full text-center mt-4"
                     >
                         <span className="text-gray-400 hover:text-gray-300 transition duration-200">
-                            {isLogin ? "New to Netflix? " : "Already a User? "}
+                            {isLogin ? "New to Be-Fit? " : "Already a User? "}
                             <span className="bg-gradient-to-r from-violet-400 to-fuchsia-500 bg-clip-text text-transparent font-semibold hover:from-violet-300 hover:to-fuchsia-400">
                                 {isLogin ? "Sign Up Now!" : "Sign In Now!"}
                             </span>
