@@ -1,36 +1,26 @@
 'use client';
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useFormState } from 'react-dom';
+import { useState,useActionState } from "react";
 import { authenticateUser } from "./auth";
+import { useRouter } from 'next/navigation';
 
 export default function LoginForm() {
     const [isLogin, setIsLogin] = useState(true);
-    const [errorMessage, setErrorMessage] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
+    
+    const [formState, formAction] = useActionState(authenticateUser, {
+        errors: {}
+    });
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const handleSubmit = async (formData) => {
         setIsLoading(true);
-        setErrorMessage("");
-
         try {
-            const formData = new FormData(e.target);
-            const email = formData.get("email");
-            const password = formData.get("password");
-            const name = formData.get("name");
-
-            const response = await authenticateUser(email, password, !isLogin ? name : null);
-
-            if (response.success) {
+            const result = await formAction(formData);
+            if (!result?.errors) {
                 router.push('/training');
-            } else {
-                setErrorMessage(response.error);
             }
-        } catch (error) {
-            console.error("Submit error:", error);
-            setErrorMessage("An unexpected error occurred");
         } finally {
             setIsLoading(false);
         }
@@ -39,7 +29,7 @@ export default function LoginForm() {
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-gray-900 to-purple-950">
             <div className="w-full max-w-md p-8 rounded-2xl bg-gray-950/90 shadow-2xl border border-gray-800">
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form action={handleSubmit} className="space-y-6">
                     <h1 className="text-4xl font-bold text-center mb-8 bg-gradient-to-r from-violet-400 to-fuchsia-500 bg-clip-text text-transparent">
                         {isLogin ? "Sign In" : "Sign Up"}
                     </h1>
@@ -76,8 +66,10 @@ export default function LoginForm() {
                         />
                     </div>
 
-                    {errorMessage && (
-                        <p className="text-red-500 text-sm text-center">{errorMessage}</p>
+                    {formState.errors?.auth && (
+                        <div className="text-red-500 text-sm text-center">
+                            {formState.errors.auth}
+                        </div>
                     )}
 
                     <button
@@ -94,10 +86,7 @@ export default function LoginForm() {
 
                     <button
                         type="button"
-                        onClick={() => {
-                            setIsLogin(!isLogin);
-                            setErrorMessage("");
-                        }}
+                        onClick={() => setIsLogin(!isLogin)}
                         className="w-full text-center mt-4"
                     >
                         <span className="text-gray-400 hover:text-gray-300 transition duration-200">

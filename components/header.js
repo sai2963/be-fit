@@ -11,10 +11,34 @@ export default function Header() {
     const router = useRouter();
 
     // Listen for authentication state changes
+    if(auth){
+        console.log('LoggedIN');
+        
+    }
+    else{
+        console.log('Not');
+        
+    }
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             setIsAuthenticated(!!user);
+            
         });
+        if(auth){
+            router.push('/training')
+        }
+        else{
+            router.push('/login')
+        }
+        
+        if(!auth){
+            router.push('/login')
+        }
+        else{
+            router.push('/training')
+        }
+        
+        
         return () => unsubscribe();
     }, []);
 
@@ -63,7 +87,7 @@ export default function Header() {
 
                     {/* Navigation */}
                     <nav className="flex items-center space-x-1 md:space-x-4">
-                        {isAuthenticated ? (
+                        {auth ? (
                             <>
                                 <Link
                                     href="/training"
