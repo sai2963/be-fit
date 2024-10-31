@@ -1,56 +1,41 @@
 'use server';
-
 import { redirect } from "next/navigation";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "@/firebase/clientApp";
 
+// Main authentication server action
 export async function authenticateUser(prevState, formData) {
     const email = formData.get("email");
     const password = formData.get("password");
     const name = formData.get("name");
 
+    console.log("Form Data:", { email, password, name }); // Log form data for debugging
+
     if (!email || !password) {
         return {
             errors: {
                 auth: "Email and password are required"
-            }
+            },
+            success: false
         };
     }
 
     try {
-        // Sign Up Flow
         if (name) {
-            try{
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                await updateProfile(userCredential.user, { displayName: name });
-                //redirect('/training');
-            }
-            catch(error){
-                console.log(error);
-                
-            }
-            
-        }
-        // Sign In Flow
-        else {
-            try{
-                await signInWithEmailAndPassword(auth, email, password);
-                //redirect('/training');
-            }
-            catch(error){
-                
-                console.log(error);
-                
-            }
-            
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            await updateProfile(userCredential.user, { displayName: name });
+            return { success: true };
+        } else {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            return { success: true };
         }
     } catch (error) {
-        
+        console.error("Authentication Error:", error); // Log errors for debugging
         return handleAuthError(error);
     }
-    redirect('/training')
 }
 
+// Error handling function
 function handleAuthError(error) {
     let errorMessage = "An unexpected Error Occurred";
 
@@ -79,6 +64,7 @@ function handleAuthError(error) {
     return {
         errors: {
             auth: errorMessage
-        }
+        },
+        success: false,
     };
 }

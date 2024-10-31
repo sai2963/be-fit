@@ -1,70 +1,13 @@
-'use client';
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { auth } from '@/firebase/clientApp';
-import { useRouter } from 'next/navigation';
+import { auth } from '@clerk/nextjs/server';
+import { SignOutButton } from './logout';
+import { useClerk } from '@clerk/nextjs';
 
-export default function Header() {
-    const [isScrolled, setIsScrolled] = useState(false);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const router = useRouter();
-
-    // Listen for authentication state changes
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            setIsAuthenticated(!!user);
-            
-        });
-        if(isAuthenticated){
-            router.push('/training')
-        }
-        else{
-            router.push('/login')
-        }
-        if(!isAuthenticated){
-            router.push('/login')
-        }
-        else{
-            router.push('/training')
-        }
-        
-        return () => unsubscribe();
-    }, []);
-
-    // Handle scroll effect
-    useEffect(() => {
-        const handleScroll = () => {
-            setIsScrolled(window.scrollY > 0);
-        };
-
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
-
-    // Handle logout
-    const handleSignoutbtn = async () => {
-        try {
-            let signout=await signOut(auth);
-            if(signout){
-                console.log('Signout Success');
-                router.push('/login');
-            }
-            //await signOut(auth);
-            
-        } catch (error) {
-            console.error('Sign out error', error);
-        }
-    };
+export default async function Header() {
+    const { userId } = await auth();
 
     return (
-        <header
-            className={`fixed w-full z-50 transition-all duration-300 ${
-                isScrolled
-                    ? 'bg-black/95 backdrop-blur-sm border-b border-gray-800'
-                    : 'bg-gradient-to-b from-black/80 to-transparent'
-            }`}
-        >
+        <header className={`fixed w-full z-50 transition-all duration-300`}>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16 md:h-20">
                     {/* Logo/Title */}
@@ -81,7 +24,7 @@ export default function Header() {
 
                     {/* Navigation */}
                     <nav className="flex items-center space-x-1 md:space-x-4">
-                        {isAuthenticated ? (
+                        {userId ? (
                             <>
                                 <Link
                                     href="/training"
@@ -97,16 +40,12 @@ export default function Header() {
                                     <span className="relative z-10">Add Training</span>
                                     <div className="absolute inset-0 h-full w-full bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-lg blur opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
                                 </Link>
-                                <button
-                                    onClick={handleSignoutbtn}
-                                    className="relative inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg shadow-lg shadow-purple-500/25 hover:from-purple-500 hover:to-pink-500 transform hover:scale-105 transition-all duration-200"
-                                >
-                                    <span>Logout</span>
-                                </button>
+                                
+                                <SignOutButton />
                             </>
                         ) : (
                             <Link
-                                href="/login"
+                                href="/sign-in"
                                 className="relative inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg shadow-lg shadow-purple-500/25 hover:from-purple-500 hover:to-pink-500 transform hover:scale-105 transition-all duration-200"
                             >
                                 <span>Login</span>
