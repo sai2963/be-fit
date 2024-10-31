@@ -11,33 +11,23 @@ export default function Header() {
     const router = useRouter();
 
     // Listen for authentication state changes
-    if(auth){
-        console.log('LoggedIN');
-        
-    }
-    else{
-        console.log('Not');
-        
-    }
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             setIsAuthenticated(!!user);
             
         });
-        if(auth){
+        if(isAuthenticated){
             router.push('/training')
         }
         else{
             router.push('/login')
         }
-        
-        if(!auth){
+        if(!isAuthenticated){
             router.push('/login')
         }
         else{
             router.push('/training')
         }
-        
         
         return () => unsubscribe();
     }, []);
@@ -55,9 +45,13 @@ export default function Header() {
     // Handle logout
     const handleSignoutbtn = async () => {
         try {
-            await signOut(auth);
-            console.log('Signout Success');
-            router.push('/login');
+            let signout=await signOut(auth);
+            if(signout){
+                console.log('Signout Success');
+                router.push('/login');
+            }
+            //await signOut(auth);
+            
         } catch (error) {
             console.error('Sign out error', error);
         }
@@ -87,7 +81,7 @@ export default function Header() {
 
                     {/* Navigation */}
                     <nav className="flex items-center space-x-1 md:space-x-4">
-                        {auth ? (
+                        {isAuthenticated ? (
                             <>
                                 <Link
                                     href="/training"

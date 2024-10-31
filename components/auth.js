@@ -8,7 +8,7 @@ export async function authenticateUser(prevState, formData) {
     const email = formData.get("email");
     const password = formData.get("password");
     const name = formData.get("name");
-    
+
     if (!email || !password) {
         return {
             errors: {
@@ -18,29 +18,37 @@ export async function authenticateUser(prevState, formData) {
     }
 
     try {
-        let user;
-        
         // Sign Up Flow
         if (name) {
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            user = userCredential.user;
-            await updateProfile(user, { displayName: name });
-            console.log("Signup successful:", user);
+            try{
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                await updateProfile(userCredential.user, { displayName: name });
+                //redirect('/training');
+            }
+            catch(error){
+                console.log(error);
+                
+            }
+            
         }
         // Sign In Flow
         else {
-            const userCredential = await signInWithEmailAndPassword(auth, email, password);
-            user = userCredential.user;
-            console.log("Login successful:", user);
+            try{
+                await signInWithEmailAndPassword(auth, email, password);
+                //redirect('/training');
+            }
+            catch(error){
+                
+                console.log(error);
+                
+            }
+            
         }
-
-        // Redirect after successful authentication
-        return redirect('/training');
-
     } catch (error) {
-        console.error("Authentication error:", error);
+        
         return handleAuthError(error);
     }
+    redirect('/training')
 }
 
 function handleAuthError(error) {
@@ -71,6 +79,6 @@ function handleAuthError(error) {
     return {
         errors: {
             auth: errorMessage
-        }
-    };
+        }
+    };
 }
