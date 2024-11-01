@@ -2,6 +2,7 @@ import { collection, getDocs } from "firebase/firestore"
 import { db } from "@/firebase/clientApp"
 
 export default async function Trainings() {
+
     const TrainRef = collection(db, 'Training Data')
     const querySnapShot = await getDocs(TrainRef);
     const TrainingData = querySnapShot.docs.map((doc) => {
@@ -11,6 +12,10 @@ export default async function Trainings() {
             ...data,
         }
     })
+    //throw new Error('Training Data Not Found')
+    if(!TrainingData){
+        throw new Error('Training Data Not Found')
+    }
 
     return (
         <div className=" min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 px-6 py-12">

@@ -17,7 +17,9 @@ export default function Addtraining() {
         const TrainingData = {
             title, description, imageUrl, createdAt: new Date(),
         }
-
+        if(!TrainingData){
+            throw new Error("Retry After Some Time")
+        }
         const docRef = await addDoc(collection(db, 'Training Data'), TrainingData)
 
        redirect('/')
