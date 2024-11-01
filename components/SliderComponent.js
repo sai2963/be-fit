@@ -1,4 +1,4 @@
-// SliderComponent.js - Client Component
+
 'use client';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
@@ -15,17 +15,16 @@ const SliderComponent = ({ slides }) => {
 
     return (
         <div className="relative h-screen overflow-hidden">
-            {/* Gradient Overlay */}
+
             <div className="absolute inset-0 bg-gradient-to-b from-gray-950/70 via-gray-950/50 to-gray-950 z-10 pointer-events-none"></div>
-            
-            {/* Image Slider */}
+
+
             <div className="relative h-full w-full">
                 {slides.map((slide, index) => (
                     <div
                         key={index}
-                        className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-                            currentSlide === index ? 'opacity-100 z-10' : 'opacity-0 z-0'
-                        }`}
+                        className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${currentSlide === index ? 'opacity-100 z-10' : 'opacity-0 z-0'
+                            }`}
                     >
                         <img
                             src={slide.image}
@@ -39,13 +38,13 @@ const SliderComponent = ({ slides }) => {
                                 left: 0
                             }}
                             className=""
-                            
+
                         />
                     </div>
                 ))}
             </div>
 
-            {/* Hero Content */}
+
             <div className="absolute inset-0 z-20 flex items-center justify-center">
                 <div className="text-center px-4 sm:px-6 lg:px-8">
                     <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold mb-6 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
@@ -64,18 +63,17 @@ const SliderComponent = ({ slides }) => {
                     </div>
                 </div>
             </div>
-            
-            {/* Slider Navigation */}
+
+
             <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex space-x-2">
                 {slides.map((_, index) => (
                     <button
                         key={index}
                         onClick={() => setCurrentSlide(index)}
-                        className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                            currentSlide === index 
-                                ? 'bg-white scale-125' 
-                                : 'bg-white/50 hover:bg-white/75'
-                        }`}
+                        className={`w-3 h-3 rounded-full transition-all duration-300 ${currentSlide === index
+                            ? 'bg-white scale-125'
+                            : 'bg-white/50 hover:bg-white/75'
+                            }`}
                     />
                 ))}
             </div>
