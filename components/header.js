@@ -1,10 +1,16 @@
 import Link from 'next/link';
-import { auth } from '@clerk/nextjs/server';
+import { auth, currentUser } from '@clerk/nextjs/server';
 import { SignOutButton } from './logout';
-import { useClerk } from '@clerk/nextjs';
+import { redirect } from 'next/navigation';0
+import AddTraining from './addTraining-btn';
 
 export default async function Header() {
+
     const { userId } = await auth();
+    const user = await currentUser();
+    const isAdmin = user && user.emailAddresses.some(email => email.emailAddress === 'venkatsai2963@outlook.com');
+    //console.log(currentUser);
+   
 
     return (
         <header className={`fixed w-full z-50 transition-all duration-300`}>
@@ -33,14 +39,8 @@ export default async function Header() {
                                     <span className="relative z-10">Training</span>
                                     <div className="absolute inset-0 h-full w-full bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-lg blur opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
                                 </Link>
-                                <Link
-                                    href="/training/new"
-                                    className="relative px-3 py-2 text-sm text-gray-300 hover:text-white transition-colors duration-200 group"
-                                >
-                                    <span className="relative z-10">Add Training</span>
-                                    <div className="absolute inset-0 h-full w-full bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-lg blur opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
-                                </Link>
-                                
+                                <AddTraining/>
+
                                 <SignOutButton />
                             </>
                         ) : (
