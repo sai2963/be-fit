@@ -21,7 +21,7 @@ const NotFound = () => {
         </div>
         <h1 className="text-4xl font-bold text-center text-gray-800 mb-4">Oops!</h1>
         <p className="text-gray-600 text-center mb-8">
-          The page you're looking for doesn't exist.
+          The page you're looking for does not exist.
         </p>
         <div className="flex justify-center">
           <Link href="/"
